@@ -333,7 +333,9 @@ body {
 }
 
 .timer-icon {
-    font-size: 48px; /* 闹钟图标大小，与timer-value保持一致 */
+    font-size: 100px; /* 进一步增大闹钟图标大小 */
+    color: #000000; /* 设置为黑色 */
+    font-weight: 300; /* 使用较细的字体重量让线条看起来更细 */
     transition: transform 0.3s ease;
 }
 
