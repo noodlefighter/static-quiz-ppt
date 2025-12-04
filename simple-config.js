@@ -30,6 +30,9 @@ const QUIZ_CONFIG = {
     // 倒计时设置（秒）
     timerDuration: 20,
 
+    // 倒计时是否自动开始（true=自动开始，false=需要手动点击闹钟图标）
+    autoStartTimer: false,
+
     // 题目数据 - 多选题页结构
     questions: [
   {
@@ -75,4 +78,5 @@ const QUIZ_CONFIG = {
 // 2. 添加题目：在questions数组中添加新对象
 // 3. 修改样式：调整styles中的颜色值
 // 4. 修改倒计时：调整timerDuration的值
-// 5. 修改完成后保存文件并刷新页面
+// 5. 倒计时自动开始：设置autoStartTimer为true则自动开始，false则需要手动点击闹钟图标
+// 6. 修改完成后保存文件并刷新页面

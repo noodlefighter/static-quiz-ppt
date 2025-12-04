@@ -8,6 +8,7 @@ class QuizSystem {
         this.answeredQuestions = new Set();
         this.timerInterval = null;
         this.timeLeft = 0;
+        this.timerStarted = false; // 计时器是否已开始
         this.currentPage = 'home';
         this.currentTopicIndex = 0; // 当前选题页索引
         this.topicPages = new Map(); // 存储动态生成的选题页元素
@@ -57,6 +58,7 @@ class QuizSystem {
             competitionRules: externalConfig.competitionRules || null,
             settings: {
                 timerDuration: externalConfig.timerDuration || 30,
+                autoStartTimer: externalConfig.autoStartTimer || false,
                 showCategories: externalConfig.showCategories !== false,
                 enableSoundEffects: externalConfig.enableSoundEffects || false,
                 autoProgress: externalConfig.autoProgress || false,
@@ -96,6 +98,7 @@ class QuizSystem {
             ],
             settings: {
                 timerDuration: 30,
+                autoStartTimer: false,
                 showCategories: true,
                 enableSoundEffects: false,
                 autoProgress: false,
@@ -145,6 +148,7 @@ class QuizSystem {
         if (this.config.settings) {
             this.settings = {
                 timerDuration: this.config.settings.timerDuration || 30,
+                autoStartTimer: this.config.settings.autoStartTimer || false,
                 showCategories: this.config.settings.showCategories !== false,
                 enableSoundEffects: this.config.settings.enableSoundEffects || false,
                 autoProgress: this.config.settings.autoProgress || false,
@@ -153,6 +157,7 @@ class QuizSystem {
         } else {
             this.settings = {
                 timerDuration: 30,
+                autoStartTimer: false,
                 showCategories: true,
                 enableSoundEffects: false,
                 autoProgress: false,
@@ -337,6 +342,12 @@ class QuizSystem {
             fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
         }
 
+        // 计时器点击事件
+        const timer = document.getElementById('timer');
+        if (timer) {
+            timer.addEventListener('click', () => this.handleTimerClick());
+        }
+
         // 键盘快捷键
         document.addEventListener('keydown', (e) => {
             if (e.key === 'F11') {
@@ -370,17 +381,36 @@ class QuizSystem {
             this.currentQuestionIndex = this.currentQuestions.findIndex(q => q.id === questionId);
         }
 
-        // 重置计时器显示为30秒
+        // 重置计时器状态
         this.timeLeft = this.settings.timerDuration || 30;
+        this.timerStarted = false; // 重置为未开始状态
+
+        // 重置计时器显示
         const timerValue = document.getElementById('timerValue');
+        const timerIcon = document.getElementById('timerIcon');
+        const timerUnit = document.getElementById('timerUnit');
+        const timerElement = document.getElementById('timer');
+
         if (timerValue) {
             timerValue.textContent = this.timeLeft;
         }
 
-        // 重置计时器颜色状态
-        const timerElement = document.getElementById('timer');
+        // 重置计时器显示状态：显示闹钟图标，隐藏数字
         if (timerElement) {
-            timerElement.className = 'timer'; // 移除所有警告颜色类
+            timerElement.className = 'timer'; // 移除所有警告颜色类和running类
+            timerElement.title = '点此开始倒计时'; // 重置提示文字
+        }
+
+        if (timerIcon) {
+            timerIcon.style.display = 'inline';
+        }
+
+        if (timerValue) {
+            timerValue.classList.add('hidden');
+        }
+
+        if (timerUnit) {
+            timerUnit.classList.add('hidden');
         }
 
         // 更新题目编号
@@ -407,11 +437,15 @@ class QuizSystem {
             answerText.textContent = question.answer;
         }
 
-        // 重置计时器
-        this.startTimer();
-
         // 显示题目页
         this.showQuestionPage();
+
+        // 根据配置决定是否自动开始计时
+        if (this.settings.autoStartTimer) {
+            // 自动启动计时器
+            this.startTimer();
+        }
+        // 如果不自动启动，则显示闹钟图标等待用户点击
 
         // 标记当前题目
         this.highlightCurrentQuestion(questionId);
@@ -486,10 +520,43 @@ class QuizSystem {
         }
     }
 
+    // 处理计时器点击事件
+    handleTimerClick() {
+        if (!this.timerStarted) {
+            this.startTimer();
+        }
+    }
+
     // 开始计时器
     startTimer() {
+        if (this.timerStarted) return; // 如果已经开始了，不重复启动
+
         this.stopTimer();
+        this.timerStarted = true;
         this.timeLeft = this.settings.timerDuration;
+
+        // 切换显示状态：隐藏闹钟图标，显示数字
+        const timerElement = document.getElementById('timer');
+        const timerIcon = document.getElementById('timerIcon');
+        const timerValue = document.getElementById('timerValue');
+        const timerUnit = document.getElementById('timerUnit');
+
+        if (timerElement) {
+            timerElement.classList.add('running');
+            timerElement.title = '计时进行中...'; // 更新提示文字
+        }
+
+        if (timerIcon) {
+            timerIcon.style.display = 'none';
+        }
+
+        if (timerValue) {
+            timerValue.classList.remove('hidden');
+        }
+
+        if (timerUnit) {
+            timerUnit.classList.remove('hidden');
+        }
 
         // 立即显示初始时间，然后开始倒计时
         this.updateTimer();
@@ -539,6 +606,7 @@ class QuizSystem {
             clearInterval(this.timerInterval);
             this.timerInterval = null;
         }
+        this.timerStarted = false; // 重置状态
     }
 
     // 页面切换方法
