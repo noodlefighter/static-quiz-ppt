@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>知识竞赛系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 导航条 -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-left">
+            <button class="nav-btn" id="homeBtn" title="返回首页">🏠 首页</button>
+            <button class="nav-btn" id="rulesBtn" title="查看竞赛规则">📋 竞赛规则</button>
+            <div id="topicsButtonsContainer" class="topics-buttons-container">
+                <!-- 动态生成的选题页按钮将插入到这里 -->
+            </div>
+        </div>
+        <div class="nav-right">
+            <button class="nav-btn" id="fullscreenBtn" title="全屏切换">⛶ 全屏</button>
+        </div>
+    </nav>
+
+    <!-- 首页 -->
+    <div class="page" id="homePage">
+        <div class="home-container">
+            <div class="quiz-title-main" id="mainTitle">知识竞赛</div>
+            <div class="click-hint">点击任意位置开始</div>
+        </div>
+    </div>
+
+    <!-- 竞赛规则页面 -->
+    <div class="page hidden" id="rulesPage">
+        <div class="rules-container">
+            <div class="rules-title" id="rulesTitle">竞赛规则</div>
+            <div class="rules-content" id="rulesContent">
+                <div class="rules-text" id="rulesText">
+                    <!-- 规则段落将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 选题页容器 - 动态生成的多个选题页将插入到这里 -->
+    <div id="topicsContainer"></div>
+
+    <!-- 题目页 -->
+    <div class="page hidden" id="questionPage">
+        <div class="question-container">
+            <div class="question-header">
+                <span class="question-number" id="questionNumber">第 1 题</span>
+                <div class="timer" id="timer">
+                    <span class="timer-value" id="timerValue">30</span>
+                    <span class="timer-unit">秒</span>
+                </div>
+                <button class="back-to-topics-btn" id="backToTopicsBtn" title="返回选题页">返回选题</button>
+            </div>
+            <div class="question-content">
+                <div class="question-text" id="questionText">题目内容将在这里显示</div>
+                <div class="answer-container hidden" id="answerContainer">
+                    <div class="answer-label">答案：</div>
+                    <div class="answer-text" id="answerText">答案内容</div>
+                </div>
+            </div>
+            <div class="question-actions">
+                <button class="action-btn" id="showAnswerBtn">显示答案</button>
+                <button class="action-btn hidden" id="nextBtn">下一题</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载指示器 -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在加载...</div>
+    </div>
+
+    <script src="simple-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

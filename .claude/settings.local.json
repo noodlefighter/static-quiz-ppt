@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(openspec validate:*)",
+      "Bash(openspec show:*)",
+      "Bash(openspec:*)",
+      "Bash(python3 -m http.server:*)",
+      "Bash(python3:*)",
+      "Bash(/dev/null)",
+      "Bash(node:*)",
+      "Bash(git add:*)",
+      "Bash(git init:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
