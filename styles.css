@@ -181,7 +181,7 @@ body {
 .topics-container {
     width: clamp(85%, 90vw, 95%);
     max-width: min(1200px, 95vw);
-    height: min(80vh, 700px);
+    height: min(95vh, 900px);
     background: rgba(255, 255, 255, 0.95);
     border-radius: clamp(8px, 2vw, 15px);
     padding: clamp(20px, 4vh, 40px);
@@ -293,6 +293,7 @@ body {
     padding: clamp(20px, 4vh, 40px);
     display: flex;
     flex-direction: column;
+    position: relative; /* 为绝对定位的答案提供定位上下文 */
 }
 
 .question-header {
@@ -333,7 +334,7 @@ body {
 }
 
 .timer-icon {
-    font-size: 100px; /* 进一步增大闹钟图标大小 */
+    font-size: 80px; /* 进一步增大闹钟图标大小 */
     color: #000000; /* 设置为黑色 */
     font-weight: 300; /* 使用较细的字体重量让线条看起来更细 */
     transition: transform 0.3s ease;
@@ -429,13 +430,22 @@ body {
 }
 
 .answer-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: auto; /* 自适应高度 */
+    min-height: 120px; /* 最小高度确保覆盖按钮区域 */
+    z-index: 100; /* 确保浮动在题目内容上方 */
     text-align: center;
-    padding: 30px; /* 增大内边距 */
-    background: #f8f9fa;
-    border-radius: 15px; /* 增大圆角 */
-    border-left: 8px solid #4CAF50; /* 增大边框 */
-    margin-top: 30px; /* 增大间距 */
-    animation: slideDown 0.5s ease-out;
+    padding: clamp(20px, 4vh, 40px); /* 自适应内边距，与容器一致 */
+    background: rgba(248, 249, 250, 0.98); /* 统一背景色 */
+    border-radius: clamp(8px, 2vw, 15px) clamp(8px, 2vw, 15px) 0 0; /* 与主容器一致的圆角 */
+    border-top: clamp(4px, 0.6vw, 8px) solid #4CAF50; /* 顶部有绿色边框 */
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1); /* 向上的阴影 */
+    backdrop-filter: blur(10px); /* 添加背景模糊效果 */
+    box-sizing: border-box;
+    animation: slideUp 0.3s ease-out; /* 使用从底部滑入的动画效果 */
 }
 
 .answer-container.hidden {
@@ -443,16 +453,18 @@ body {
 }
 
 .answer-label {
-    font-size: 24px; /* 增大答案标签字体 */
+    font-size: clamp(18px, 3vw, 28px); /* 自适应答案标签字体 */
     font-weight: bold;
     color: #666666;
-    margin-bottom: 15px; /* 增大间距 */
+    margin-bottom: clamp(10px, 2vh, 20px); /* 自适应间距 */
 }
 
 .answer-text {
-    font-size: 32px; /* 增大答案文字字体 */
+    font-size: clamp(24px, 4vw, 40px); /* 自适应答案文字字体 */
     color: #4CAF50;
     font-weight: bold;
+    word-wrap: break-word; /* 长文本自动换行 */
+    word-break: break-word;
 }
 
 .question-actions {
@@ -574,6 +586,28 @@ body {
     }
 }
 
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -611,6 +645,7 @@ body {
     .topics-container {
         width: 95%;
         padding: 30px;
+        height: min(90vh, 800px); /* 与答题页面保持一致 */
     }
 
     .topics-header h2 {
@@ -651,8 +686,18 @@ body {
         padding-top: 15px;
     }
 
+    .answer-container {
+        padding: clamp(15px, 3vh, 30px); /* 小屏幕上调整内边距 */
+        min-height: 100px; /* 小屏幕上减小最小高度 */
+    }
+
+    .answer-label {
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+
     .answer-text {
-        font-size: 28px; /* 保持较大字体 */
+        font-size: 24px; /* 保持较大字体 */
     }
 
     .action-btn {
@@ -703,13 +748,27 @@ body {
         height: min(85vh, 750px);
     }
 
+    .topics-container {
+        height: min(85vh, 750px); /* 与答题页面保持一致 */
+    }
+
     .question-actions {
         min-height: 65px;
         padding-top: 12px;
     }
 
+    .answer-container {
+        padding: clamp(12px, 2.5vh, 25px); /* 极小屏幕上进一步调整内边距 */
+        min-height: 90px; /* 极小屏幕上进一步减小最小高度 */
+    }
+
+    .answer-label {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
     .answer-text {
-        font-size: 24px; /* 保持较大字体 */
+        font-size: 20px; /* 保持较大字体 */
     }
 
     .question-actions {
@@ -934,6 +993,25 @@ body {
         height: min(80vh, 700px);
     }
 
+    .topics-container {
+        height: min(80vh, 700px); /* 与答题页面保持一致 */
+    }
+
+    .answer-container {
+        padding: clamp(10px, 2vh, 20px); /* 极小屏幕上最小内边距 */
+        border-top-width: clamp(3px, 0.5vw, 6px); /* 调整边框宽度 */
+        min-height: 80px; /* 极小屏幕上最小高度 */
+    }
+
+    .answer-label {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .answer-text {
+        font-size: 18px; /* 保持较大字体 */
+    }
+
     .question-actions {
         min-height: 60px;
         padding-top: 10px;
@@ -1103,7 +1181,7 @@ body {
 
     .topics-container,
     .rules-container {
-        height: min(80dvh, 700px);
+        height: min(95dvh, 900px);
     }
 
     .question-container {
