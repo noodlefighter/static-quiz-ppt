@@ -82,15 +82,16 @@ const QUIZ_CONFIG = {
         background: "background.png" // 背景图片
     },
 
-    timerDuration: 30,            // 倒计时秒数
+    timerDuration: 30,            // 全局倒计时秒数（可被环节覆盖）
 
     questions: [
         {
-            id: 1,
-            question: "你的问题？",
-            answer: "答案"
+            page_title: "环节名称",
+            timerDuration: 20,    // 该环节的倒计时秒数（可选）
+            questions: [
+                { id: 1, question: "你的问题？", answer: "答案" },
+            ]
         },
-        // 添加更多题目...
     ]
 };
 ```
@@ -99,7 +100,7 @@ const QUIZ_CONFIG = {
 
 ### 基础配置
 - `title`: 竞赛标题，所有页面统一显示
-- `timerDuration`: 倒计时秒数（默认30秒）
+- `timerDuration`: 全局倒计时秒数（默认30秒），可被各环节的 `timerDuration` 覆盖
 - `enableSoundEffects`: 音效开关（未启用）
 - `autoProgress`: 自动进度（未启用）
 - `shuffleQuestions`: 随机题目（未启用）
@@ -160,12 +161,32 @@ const QUIZ_CONFIG = {
     └── changes/       # 变更记录
 ```
 
+## 使用说明
+
+### 推荐浏览器
+优先使用 **Chrome** 或 **Edge**，兼容性最佳。也支持 Firefox 和 Safari。
+
+### 全屏模式
+按 **F11** 键可切换浏览器全屏模式，隐藏地址栏和标签栏，获得最佳演示效果。
+也可点击页面右上角的「⛶ 全屏」按钮。
+
+### 调整字体大小
+按住 **Ctrl 键 + 鼠标滚轮**，可临时放大或缩小页面字体，适应不同投影环境。
+
+### 基本操作流程
+1. 打开 `index.html`，显示首页
+2. 点击任意位置进入竞赛规则页
+3. 点击导航栏的「📋 选题页」进入选题界面
+4. 选择题目序号进入答题
+5. 点击闹钟图标启动倒计时
+6. 点击「显示答案」查看答案
+
 ## 浏览器兼容性
 
-- ✅ Chrome 60+
+- ✅ Chrome 60+（推荐）
+- ✅ Edge 79+（推荐）
 - ✅ Firefox 55+
 - ✅ Safari 12+
-- ✅ Edge 79+
 
 ## 开发历史
 

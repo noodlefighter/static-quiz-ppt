@@ -381,8 +381,8 @@ class QuizSystem {
             this.currentQuestionIndex = this.currentQuestions.findIndex(q => q.id === questionId);
         }
 
-        // 重置计时器状态
-        this.timeLeft = this.settings.timerDuration || 30;
+        // 重置计时器状态（优先使用当前环节配置的倒计时）
+        this.timeLeft = (topicData && topicData.timerDuration) || this.settings.timerDuration || 30;
         this.timerStarted = false; // 重置为未开始状态
 
         // 重置计时器显示
@@ -533,7 +533,7 @@ class QuizSystem {
 
         this.stopTimer();
         this.timerStarted = true;
-        this.timeLeft = this.settings.timerDuration;
+        this.timeLeft = this.timeLeft || this.settings.timerDuration;
 
         // 切换显示状态：隐藏闹钟图标，显示数字
         const timerElement = document.getElementById('timer');
