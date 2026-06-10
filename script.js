@@ -348,6 +348,15 @@ class QuizSystem {
             timer.addEventListener('click', () => this.handleTimerClick());
         }
 
+        // 首页导航栏显示控制：鼠标进入页面上方约20%区域时显示，离开该区域时隐藏
+        document.addEventListener('mousemove', (e) => {
+            this.updateHomeNavbarVisibility(e.clientY);
+        });
+
+        document.addEventListener('mouseleave', () => {
+            this.updateHomeNavbarVisibility(window.innerHeight);
+        });
+
         // 键盘快捷键
         document.addEventListener('keydown', (e) => {
             if (e.key === 'F11') {
@@ -722,6 +731,24 @@ class QuizSystem {
         pages.forEach(page => {
             page.classList.add('hidden');
         });
+    }
+
+    // 更新首页导航栏显示状态
+    updateHomeNavbarVisibility(mouseY) {
+        const navbar = document.getElementById('navbar');
+        if (!navbar) return;
+
+        if (this.currentPage !== 'home') {
+            navbar.classList.remove('hidden');
+            return;
+        }
+
+        const revealThreshold = window.innerHeight * 0.2;
+        if (mouseY <= revealThreshold) {
+            navbar.classList.remove('hidden');
+        } else {
+            navbar.classList.add('hidden');
+        }
     }
 
     // 更新导航栏
