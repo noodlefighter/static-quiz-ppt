@@ -357,6 +357,14 @@ class QuizSystem {
             this.updateHomeNavbarVisibility(window.innerHeight);
         });
 
+        // 刷新或关闭页面前提醒答题进度会丢失
+        window.addEventListener('beforeunload', (event) => {
+            const message = '如果关闭、刷新，答题进度将会丢失，确认要关闭吗';
+            event.preventDefault();
+            event.returnValue = message;
+            return message;
+        });
+
         // 键盘快捷键
         document.addEventListener('keydown', (e) => {
             if (e.key === 'F11') {
