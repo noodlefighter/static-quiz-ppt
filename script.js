@@ -136,7 +136,7 @@ class QuizSystem {
 
         // 更新标题
         const title = this.config.quiz.title || '知识竞赛系统';
-        document.title = title;
+        document.title = title.replace(/\s+/g, ' ').trim();
 
         // 更新首页主标题
         const mainTitle = document.getElementById('mainTitle');
