@@ -6,6 +6,8 @@ class QuizSystem {
         this.currentQuestions = []; // 当前选题页的题目
         this.currentQuestionIndex = 0;
         this.answeredQuestions = new Set();
+        this.storageKey = 'quiz-system-progress-v1';
+        this.storageEnabled = false;
         this.timerInterval = null;
         this.timeLeft = 0;
         this.timerStarted = false; // 计时器是否已开始
@@ -14,8 +16,22 @@ class QuizSystem {
         this.topicPages = new Map(); // 存储动态生成的选题页元素
 
         // 初始化
+        this.initializeStorage();
         this.loadConfig();
         this.bindEvents();
+    }
+
+    initializeStorage() {
+        try {
+            const storage = window.localStorage;
+            const testKey = `${this.storageKey}-test`;
+            storage.setItem(testKey, '1');
+            storage.removeItem(testKey);
+            this.storageEnabled = true;
+        } catch (error) {
+            this.storageEnabled = false;
+            console.warn('本地存储不可用，答题进度将仅在当前会话中保留:', error);
+        }
     }
 
     // 加载配置文件
@@ -187,6 +203,8 @@ class QuizSystem {
             this.currentTopicIndex = 0;
             this.currentQuestions = this.questionsData[0].questions || [];
         }
+
+        this.restoreProgress();
     }
 
     // 创建选题页按钮
@@ -330,6 +348,11 @@ class QuizSystem {
             nextBtn.addEventListener('click', () => this.nextQuestion());
         }
 
+        const resetProgressBtn = document.getElementById('resetProgressBtn');
+        if (resetProgressBtn) {
+            resetProgressBtn.addEventListener('click', () => this.handleResetProgress());
+        }
+
         // 导航按钮
         const homeBtn = document.getElementById('homeBtn');
         if (homeBtn) {
@@ -355,14 +378,6 @@ class QuizSystem {
 
         document.addEventListener('mouseleave', () => {
             this.updateHomeNavbarVisibility(window.innerHeight);
-        });
-
-        // 刷新或关闭页面前提醒答题进度会丢失
-        window.addEventListener('beforeunload', (event) => {
-            const message = '如果关闭、刷新，答题进度将会丢失，确认要关闭吗';
-            event.preventDefault();
-            event.returnValue = message;
-            return message;
         });
 
         // 键盘快捷键
@@ -456,6 +471,7 @@ class QuizSystem {
 
         // 显示题目页
         this.showQuestionPage();
+        this.saveProgress();
 
         // 根据配置决定是否自动开始计时
         if (this.settings.autoStartTimer) {
@@ -494,25 +510,27 @@ class QuizSystem {
             answerContainer.classList.remove('hidden');
         }
 
-        if (nextBtn && !nextBtn.classList.contains('hidden')) {
+        if (nextBtn && nextBtn.classList.contains('hidden')) {
             nextBtn.classList.remove('hidden');
         }
 
         // 标记为已答题
         const currentQuestion = this.currentQuestions[this.currentQuestionIndex];
         if (currentQuestion) {
-            this.answeredQuestions.add(currentQuestion.id);
-            this.markQuestionAsAnswered(currentQuestion.id);
+            const questionKey = this.getQuestionKey(this.currentTopicIndex, currentQuestion.id);
+            this.answeredQuestions.add(questionKey);
+            this.markQuestionAsAnswered(currentQuestion.id, this.currentTopicIndex);
         }
 
         // 停止计时器
         this.stopTimer();
+        this.saveProgress();
     }
 
     // 标记题目为已答题
-    markQuestionAsAnswered(questionId) {
+    markQuestionAsAnswered(questionId, topicIndex = this.currentTopicIndex) {
         // 同时使用questionId和topicIndex来精确定位当前选题页中的题目按钮
-        const button = document.querySelector(`[data-question-id="${questionId}"][data-topic-index="${this.currentTopicIndex}"]`);
+        const button = document.querySelector(`[data-question-id="${questionId}"][data-topic-index="${topicIndex}"]`);
         if (button) {
             button.classList.add('answered');
         }
@@ -636,6 +654,7 @@ class QuizSystem {
         this.currentPage = 'home';
         this.updateNavigation();
         this.stopTimer();
+        this.saveProgress();
     }
 
     showTopicsPage(topicIndex = 0) {
@@ -648,6 +667,7 @@ class QuizSystem {
         }
 
         this.currentTopicIndex = topicIndex;
+        this.currentQuestions = (this.questionsData[topicIndex] && this.questionsData[topicIndex].questions) || [];
         this.currentPage = 'topics';
         this.updateNavigation();
         this.stopTimer();
@@ -659,6 +679,7 @@ class QuizSystem {
 
         // 更新导航栏按钮状态
         this.updateTopicButtons();
+        this.saveProgress();
     }
 
     // 显示竞赛规则页面
@@ -671,6 +692,7 @@ class QuizSystem {
         this.currentPage = 'rules';
         this.updateNavigation();
         this.stopTimer();
+        this.saveProgress();
 
         // 加载规则内容
         this.loadRulesContent();
@@ -731,6 +753,124 @@ class QuizSystem {
         }
         this.currentPage = 'question';
         this.updateNavigation();
+    }
+
+    getQuestionKey(topicIndex, questionId) {
+        return `${topicIndex}:${questionId}`;
+    }
+
+    getStorageSnapshot() {
+        return {
+            answeredQuestions: Array.from(this.answeredQuestions),
+            currentPage: this.currentPage,
+            currentTopicIndex: this.currentTopicIndex,
+            currentQuestionId: this.currentQuestions[this.currentQuestionIndex]?.id || null
+        };
+    }
+
+    saveProgress() {
+        if (!this.storageEnabled) return;
+
+        try {
+            window.localStorage.setItem(this.storageKey, JSON.stringify(this.getStorageSnapshot()));
+        } catch (error) {
+            console.warn('保存答题进度失败:', error);
+        }
+    }
+
+    restoreProgress() {
+        if (!this.storageEnabled) return;
+
+        let savedState = null;
+
+        try {
+            const rawState = window.localStorage.getItem(this.storageKey);
+            if (!rawState) return;
+            savedState = JSON.parse(rawState);
+        } catch (error) {
+            console.warn('读取答题进度失败，已忽略损坏数据:', error);
+            this.clearSavedProgress();
+            return;
+        }
+
+        if (!savedState || typeof savedState !== 'object') return;
+
+        this.answeredQuestions = new Set(
+            Array.isArray(savedState.answeredQuestions) ? savedState.answeredQuestions : []
+        );
+        this.applyAnsweredStates();
+
+        const topicIndex = Number.isInteger(savedState.currentTopicIndex) ? savedState.currentTopicIndex : 0;
+        const safeTopicIndex = this.questionsData[topicIndex] ? topicIndex : 0;
+        const questionId = savedState.currentQuestionId;
+
+        if (savedState.currentPage === 'question' && questionId !== null && questionId !== undefined) {
+            this.showQuestion(questionId, safeTopicIndex);
+            return;
+        }
+
+        if (savedState.currentPage === 'topics') {
+            this.showTopicsPage(safeTopicIndex);
+            return;
+        }
+
+        if (savedState.currentPage === 'rules') {
+            this.showRulesPage();
+            return;
+        }
+
+        this.showHomePage();
+    }
+
+    applyAnsweredStates() {
+        this.answeredQuestions.forEach((questionKey) => {
+            const [topicIndexText, questionIdText] = String(questionKey).split(':');
+            const topicIndex = Number.parseInt(topicIndexText, 10);
+            const questionId = Number.parseInt(questionIdText, 10);
+
+            if (Number.isNaN(topicIndex) || Number.isNaN(questionId)) {
+                return;
+            }
+
+            this.markQuestionAsAnswered(questionId, topicIndex);
+        });
+    }
+
+    clearSavedProgress() {
+        if (!this.storageEnabled) return;
+
+        try {
+            window.localStorage.removeItem(this.storageKey);
+        } catch (error) {
+            console.warn('清除答题进度失败:', error);
+        }
+    }
+
+    handleResetProgress() {
+        const confirmed = window.confirm('确定要清除本机保存的答题进度吗？');
+        if (!confirmed) return;
+
+        this.stopTimer();
+        this.clearSavedProgress();
+        this.answeredQuestions = new Set();
+        this.currentQuestions = this.questionsData[0]?.questions || [];
+        this.currentQuestionIndex = 0;
+        this.currentTopicIndex = 0;
+
+        document.querySelectorAll('.topic-btn').forEach((button) => {
+            button.classList.remove('answered', 'current');
+        });
+
+        const answerContainer = document.getElementById('answerContainer');
+        const nextBtn = document.getElementById('nextBtn');
+        if (answerContainer) {
+            answerContainer.classList.add('hidden');
+        }
+        if (nextBtn) {
+            nextBtn.classList.add('hidden');
+        }
+
+        this.showHomePage();
     }
 
     // 隐藏所有页面
