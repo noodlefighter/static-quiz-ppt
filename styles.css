@@ -498,7 +498,6 @@ body {
     display: none;
 }
 
-
 #showAnswerBtn {
     background: #2196F3;
     color: #ffffff;
@@ -841,6 +840,8 @@ body {
 .rules-actions {
     display: flex;
     justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
     margin-top: 40px;
 }
 
@@ -858,15 +859,40 @@ body {
     min-width: 200px;
 }
 
+.secondary-btn {
+    background: rgba(33, 33, 33, 0.88);
+    color: white;
+    border: none;
+    padding: 20px 50px;
+    font-size: 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.22);
+    font-weight: bold;
+    min-width: 200px;
+}
+
 .primary-btn:hover {
     background: linear-gradient(45deg, #1976D2, #1565C0);
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
 }
 
+.secondary-btn:hover {
+    background: rgba(180, 32, 32, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(180, 32, 32, 0.28);
+}
+
 .primary-btn:active {
     transform: translateY(0);
     box-shadow: 0 3px 10px rgba(33, 150, 243, 0.3);
+}
+
+.secondary-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(180, 32, 32, 0.24);
 }
 
 /* 竞赛规则页面响应式设计 */
@@ -897,6 +923,11 @@ body {
         padding: 15px 40px;
         font-size: 20px;
     }
+
+    .secondary-btn {
+        padding: 15px 40px;
+        font-size: 20px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -921,6 +952,13 @@ body {
     }
 
     .primary-btn {
+        padding: 12px 30px;
+        font-size: 18px;
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .secondary-btn {
         padding: 12px 30px;
         font-size: 18px;
         width: 100%;
