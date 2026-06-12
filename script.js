@@ -14,6 +14,7 @@ class QuizSystem {
         this.currentPage = 'home';
         this.currentTopicIndex = 0; // 当前选题页索引
         this.topicPages = new Map(); // 存储动态生成的选题页元素
+        this.questionFontResizeTimer = null;
 
         // 初始化
         this.initializeStorage();
@@ -387,6 +388,10 @@ class QuizSystem {
                 this.toggleFullscreen();
             }
         });
+
+        window.addEventListener('resize', () => {
+            this.scheduleQuestionTextResize();
+        });
     }
 
 
@@ -471,6 +476,7 @@ class QuizSystem {
 
         // 显示题目页
         this.showQuestionPage();
+        this.scheduleQuestionTextResize();
         this.saveProgress();
 
         // 根据配置决定是否自动开始计时
@@ -753,6 +759,70 @@ class QuizSystem {
         }
         this.currentPage = 'question';
         this.updateNavigation();
+    }
+
+    scheduleQuestionTextResize() {
+        if (this.currentPage !== 'question') return;
+
+        if (this.questionFontResizeTimer) {
+            clearTimeout(this.questionFontResizeTimer);
+        }
+
+        this.questionFontResizeTimer = setTimeout(() => {
+            this.questionFontResizeTimer = null;
+            this.fitQuestionText();
+        }, 0);
+    }
+
+    fitQuestionText() {
+        const questionText = document.getElementById('questionText');
+        if (!questionText) return;
+
+        const computedStyle = window.getComputedStyle(questionText);
+        const baseFontSize = this.getResponsiveQuestionFontSize();
+        const minFontSize = 12;
+        const lineHeightRatio = 1.4;
+
+        questionText.style.fontSize = `${baseFontSize}px`;
+        questionText.style.lineHeight = `${lineHeightRatio}`;
+
+        const availableHeight = questionText.clientHeight
+            - parseFloat(computedStyle.paddingTop)
+            - parseFloat(computedStyle.paddingBottom);
+
+        if (availableHeight <= 0) {
+            return;
+        }
+
+        let fontSize = baseFontSize;
+        while (fontSize > minFontSize && questionText.scrollHeight > questionText.clientHeight) {
+            fontSize -= 1;
+            questionText.style.fontSize = `${fontSize}px`;
+        }
+
+        // 极端情况下仍然可能超出，收紧行高进一步压缩。
+        if (questionText.scrollHeight > questionText.clientHeight) {
+            questionText.style.lineHeight = '1.25';
+
+            while (fontSize > minFontSize && questionText.scrollHeight > questionText.clientHeight) {
+                fontSize -= 1;
+                questionText.style.fontSize = `${fontSize}px`;
+            }
+        }
+    }
+
+    getResponsiveQuestionFontSize() {
+        const viewportWidth = window.innerWidth;
+
+        if (viewportWidth <= 480) {
+            return 22;
+        }
+
+        if (viewportWidth <= 768) {
+            return 26;
+        }
+
+        return 28;
     }
 
     getQuestionKey(topicIndex, questionId) {

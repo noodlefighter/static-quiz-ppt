@@ -405,17 +405,13 @@ body {
 }
 
 .question-text {
-    /* 使用更小的基础字体和多行截断来适应不同内容长度 */
-    font-size: clamp(12px, 2vw, 28px); /* 更保守的字体范围 */
+    font-size: clamp(12px, 2vw, 28px);
     line-height: 1.4;
     text-align: left;
     color: #333333;
     margin-bottom: clamp(15px, 3vh, 30px);
     height: min(40vh, 350px);
     overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 12; /* 最多显示12行，提供足够空间 */
     padding: clamp(15px, 2.5vh, 20px);
     background: #fafafa;
     border-radius: clamp(8px, 1.5vw, 12px);
@@ -425,7 +421,6 @@ body {
     flex-shrink: 1;
     word-wrap: break-word;
     word-break: break-word;
-    text-overflow: ellipsis;
     white-space: pre-wrap; /* 保留题干中的连续空格，例如选择题括号内的4个空格 */
     hyphens: auto; /* 自动连字符 */
 }
@@ -678,7 +673,6 @@ body {
         font-size: clamp(16px, 3vw, 26px); /* 自适应字体 */
         height: min(35vh, 280px);
         padding: clamp(12px, 2vh, 18px);
-        -webkit-line-clamp: 10; /* 中等屏幕显示10行 */
     }
 
     .question-actions {
@@ -736,7 +730,6 @@ body {
         font-size: clamp(14px, 2.5vw, 22px); /* 自适应字体 */
         height: min(30vh, 220px);
         padding: clamp(10px, 1.5vh, 15px);
-        -webkit-line-clamp: 8; /* 手机屏幕显示8行 */
     }
 
     .question-content {
