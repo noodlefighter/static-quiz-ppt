@@ -24,7 +24,8 @@ const QUIZ_CONFIG = {
         successColor: "#4CAF50",  // 成功颜色
         warningColor: "#ff9800",  // 警告颜色
         dangerColor: "#f44336",   // 危险颜色
-        background: "assets/background.png" // 背景图片路径
+        background: "assets/background.png", // 背景图片路径
+        titleFontSize: "110px"
     },
 
     // 倒计时设置（秒）

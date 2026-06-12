@@ -69,7 +69,8 @@ class QuizSystem {
                 primaryColor: externalConfig.styles?.primaryColor || "#2196F3",
                 successColor: externalConfig.styles?.successColor || "#4CAF50",
                 warningColor: externalConfig.styles?.warningColor || "#ff9800",
-                dangerColor: externalConfig.styles?.dangerColor || "#f44336"
+                dangerColor: externalConfig.styles?.dangerColor || "#f44336",
+                titleFontSize: externalConfig.styles?.titleFontSize || null
             },
             questions: externalConfig.questions || [],
             competitionRules: externalConfig.competitionRules || null,
@@ -94,7 +95,8 @@ class QuizSystem {
                 primaryColor: "#2196F3",
                 successColor: "#4CAF50",
                 warningColor: "#ff9800",
-                dangerColor: "#f44336"
+                dangerColor: "#f44336",
+                titleFontSize: null
             },
             questions: [
                 {
@@ -159,6 +161,12 @@ class QuizSystem {
         const mainTitle = document.getElementById('mainTitle');
         if (mainTitle) {
             mainTitle.textContent = title;
+
+            if (this.config.quiz.titleFontSize) {
+                mainTitle.style.fontSize = this.config.quiz.titleFontSize;
+            } else {
+                mainTitle.style.removeProperty('font-size');
+            }
         }
 
         // 应用设置
